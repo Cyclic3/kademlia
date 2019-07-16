@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package c3.kademlia.proto;
+
+message Contact {
+  bytes nid = 1;
+  string location = 2;
+}
+service Kademlia {
+  rpc ping(PingRequest) returns (PingResponse);
+  rpc store(StoreRequest) returns (StoreResponse);
+  rpc find_node(FindNodeRequest) returns (FindNodeResponse);
+  rpc find_value(FindValueRequest) returns (FindValueResponse);
+}
+
+message ExchangeNidRequest  { bytes nid = 1; }
+message ExchangeNidResponse { bytes nid = 1; }
+
+message PingRequest  {}
+message PingResponse {}
+
+message StoreRequest  { bytes data = 1; uint64 age = 2; }
+message StoreResponse { bool success = 1; }
+
+message FindNodeRequest  { bytes nid = 1; }
+message FindNodeResponse { repeated Contact contacts = 1; }
+
+message FindValueRequest  { bytes nid = 1; }
+message FindValueResponse { oneof value { bytes found = 1; FindNodeResponse not_found = 2; } }
