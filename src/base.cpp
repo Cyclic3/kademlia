@@ -44,10 +44,9 @@ namespace c3::kademlia {
 
   nid_t generate_nid() {
     thread_local std::random_device rng;
-    thread_local std::uniform_int_distribution<uint8_t> dist;
 
     nid_t ret;
-    std::generate(ret.begin(), ret.end(), [&] () { return dist(rng); });
+    std::generate(ret.begin(), ret.end(), [&] () { return rng(); });
 
     return ret;
   }

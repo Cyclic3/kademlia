@@ -305,11 +305,12 @@ namespace c3::kademlia {
         auto iter = all.cbegin();
         size_t new_min_dist = distance(*iter, nid);
         auto closest = iter;
-        while (iter++ != all.cend()) {
+        while (iter != all.cend()) {
           if (auto dist = distance(nid, *iter); dist < new_min_dist) {
             closest = iter;
             new_min_dist = dist;
           }
+		  ++iter;
         }
         new_closest = *closest;
       }

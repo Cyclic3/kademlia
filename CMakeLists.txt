@@ -5,13 +5,11 @@ project(kademlia VERSION 0.0.1)
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 set(CMAKE_CXX_STANDARD 17)
 
-add_compile_options("-Wall" "-Wextra")
-
 find_package(Threads REQUIRED)
 find_package(Protobuf REQUIRED)
 find_package(gRPC REQUIRED)
 find_package(OpenSSL REQUIRED)
-find_package(GSL REQUIRED)
+find_package(Miniupnpc REQUIRED)
 include_directories(${PROTO_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIRS})
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
@@ -19,6 +17,10 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 file(GLOB_RECURSE source src/*.cpp)
 
 if(WIN32)
+  add_compile_definitions(_WIN32_WINNT=0x600)
+  find_package(MSGSL REQUIRED)
+  include_directories(SYSTEM ${MSGSL_INCLUDE_DIRS})
+  list(APPEND extra_libs ws2_32)
   file(GLOB_RECURSE platform_source_tmp src/*.WINDOWS.cxx)
   set(platform_source ${platform_source} ${platform_source_tmp})
 endif()
@@ -37,6 +39,7 @@ endif()
 if("${CMAKE_SYSTEM_NAME}" MATCHES "Linux")
   file(GLOB_RECURSE platform_source_tmp src/*.LINUX.cxx)
   set(platform_source ${platform_source} ${platform_source_tmp})
+  list(APPEND extra_libs atomic)
 endif()
 
 file(GLOB_RECURSE proto_source proto/*)
@@ -63,12 +66,12 @@ include_directories(${SDL2_INCLUDE_DIRS})
 include_directories(${OPENGL_INCLUDE_DIR})
 list(APPEND imgui_backend imgui/examples/imgui_impl_sdl.cpp imgui/examples/imgui_impl_opengl2.cpp)
 
-add_library(imgui ${imgui_src} ${imgui_backend})
+add_library(imgui STATIC ${imgui_src} ${imgui_backend})
 target_link_libraries(imgui ${SDL2_LIBRARIES} OpenGL::GL SDL2::SDL2)
 
 add_executable(${PROJECT_NAME} ${source} ${platform_source} ${proto_gen_source} ${rpc_gen_source})
 
-target_link_libraries(${PROJECT_NAME} ${PROTOBUF_LIBRARIES} ${OPENSSL_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} gRPC::grpc++_reflection imgui atomic miniupnpc GSL::gsl)
+target_link_libraries(${PROJECT_NAME} ${PROTOBUF_LIBRARIES} ${OPENSSL_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${GRPC_LIBRARIES} imgui ${MINIUPNPC_LIBRARIES} ${extra_libs})
 
 file(GLOB_RECURSE tests tests/*.cxx)
 

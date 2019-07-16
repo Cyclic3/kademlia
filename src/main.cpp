@@ -1,3 +1,5 @@
+#define SDL_MAIN_HANDLED
+
 #include "node.hpp"
 
 #include "format.pb.h"
@@ -26,6 +28,7 @@
 
 #include <miniupnpc/miniupnpc.h>
 #include <miniupnpc/upnpcommands.h>
+
 
 using namespace c3::kademlia;
 using namespace std::chrono_literals;
@@ -433,7 +436,7 @@ public:
   }
 };
 
-int main() {
+int main(int, char**) {
   window w;
 
   return 0;
