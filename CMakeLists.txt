@@ -11,6 +11,7 @@ find_package(Threads REQUIRED)
 find_package(Protobuf REQUIRED)
 find_package(gRPC REQUIRED)
 find_package(OpenSSL REQUIRED)
+find_package(GSL REQUIRED)
 include_directories(${PROTO_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIRS})
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
@@ -63,11 +64,11 @@ include_directories(${OPENGL_INCLUDE_DIR})
 list(APPEND imgui_backend imgui/examples/imgui_impl_sdl.cpp imgui/examples/imgui_impl_opengl2.cpp)
 
 add_library(imgui ${imgui_src} ${imgui_backend})
-target_link_libraries(imgui ${SDL2_LIBRARIES} OpenGL::GL)
+target_link_libraries(imgui ${SDL2_LIBRARIES} OpenGL::GL SDL2::SDL2)
 
 add_executable(${PROJECT_NAME} ${source} ${platform_source} ${proto_gen_source} ${rpc_gen_source})
 
-target_link_libraries(${PROJECT_NAME} ${PROTOBUF_LIBRARIES} ${OPENSSL_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} gRPC::grpc++_reflection imgui atomic miniupnpc)
+target_link_libraries(${PROJECT_NAME} ${PROTOBUF_LIBRARIES} ${OPENSSL_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} gRPC::grpc++_reflection imgui atomic miniupnpc GSL::gsl)
 
 file(GLOB_RECURSE tests tests/*.cxx)
 
